@@ -1,0 +1,25 @@
+.bottom-line {
+    border-bottom: thick solid #337AB7;
+}
+
+.left-pad {
+    padding-left: 20px;
+}
+
+.right-pad {
+    padding-right: 20px;
+}
+
+.map-canvas {
+    width:100%;
+    height: 90%;
+    position: relative !important;
+}
+
+.map-div {
+    height: 300px;
+}
+
+.travel-div {
+    height: 150px;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Map Tools</title>
+
+    <link href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div>
+    <h3 class="text-primary left-pad">Measure Distance</h3>
+    <p class="left-pad">The measure distance tool is a simple way of find the distance between two points on a map. Start Clicking!</p>
+</div>
+<p class="bottom-line"></p>
+<div class="map-div">
+    <h3 class="text-primary left-pad">Map</h3>
+    <div id="map" class="map-canvas"></div>
+</div>
+<div>
+    <h3 class="text-primary left-pad">Options</h3>
+    <p class="text-center">[ Map Height :
+        <a href="javascript:void(0)" onclick="setMapHeight('small')">Small</a> -
+        <a href="javascript:void(0)" onclick="setMapHeight('medium')">Medium</a> -
+        <a href="javascript:void(0)" onclick="setMapHeight('large')">Large</a> -
+        <a href="javascript:void(0)" onclick="setMapHeight('full')">Full Screen</a>
+        ]
+    </p>
+    <p class="text-center">
+        <label>Total Distance</label>
+        <input type="text" id="tdist" name="tdist" readonly />
+        <input type="radio" id="dist_km" name="dist_unit" /> <label>km</label>
+        <input type="radio" id="dist_miles" name="dist_unit" /> <label>miles</label>
+    </p>
+    <p class="text-center">
+        <input type="checkbox" id="autopan" name="autopan" /> <label>Autopan ?   </label>
+        <input type="checkbox" id="snap_roads" name="snap_roads" /> <label>Snap To Roads ?   </label>
+        <input type="checkbox" id="midpoint_drag" name="midpoint_drag" /> <label>Midpoint Drag ? </label>
+    </p>
+</div>
+<p class="bottom-line"></p>
+<div class="travel-div">
+    <h3 class="text-primary left-pad">Travel Time</h3>
+    <p class="text-center">
+        <label>Select Speed</label>
+    </p>
+    <p class="pull-left left-pad">
+        <label>Mode of Transport</label><br/>
+        <input type="radio" id="mode_walk" name="mode_transport" value="walking" /> <label>Walking</label><br/>
+        <input type="radio" id="mode_drive" name="mode_transport" value="driving" /> <label>Driving</label>
+    </p>
+    <p class="pull-right right-pad">
+        <label>Time Unit</label>
+        <select id="time_unit" name="time_unit">
+            <option value="min">Minutes</option>
+            <option value="hrs">Hours</option>
+            <option value="days">Days</option>
+        </select>
+    </p>
+</div>
+<p class="bottom-line"></p>
+<div>
+    <h3 class="text-primary left-pad">How to use the Measure Distance Tool?</h3>
+</div>
+<p class="bottom-line"></p>
+</body>
+
+<!-- Latest compiled and minified JQuery -->
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+
+<!-- Latest compiled and minified Bootstrap JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyA7xY6JgrR-hAOLs1ZmZU9vCoFNb_YQ7qI"></script>
+
+
+<script type="text/javascript" src="script.js"></script>
+</html>
