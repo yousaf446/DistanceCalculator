@@ -60,8 +60,9 @@
     <h3 class="text-primary left-pad">Travel Time</h3>
     <p class="text-center">
         <label>Select Speed</label>
-        <input id="speed_range" type="range" min="0" max="100" step="5" value="0" class="speed"/><input type="text" id="speed_meter" name="speed_meter" readonly style="width:30px" /><label>MPH</label>
+        <div id="speed_range"></div><input type="text" id="speed_meter" name="speed_meter" readonly style="width:30px" /><label>MPH</label>
     </p>
+    <br/>
     <p class="pull-left left-pad">
         <label>Mode of Transport</label><br/>
         <input type="radio" id="mode_walk" name="mode_transport" value="walking" /> <label>Walking</label><br/>
@@ -76,6 +77,8 @@
         </select>
     </p>
 </div>
+<br/> <br/><br/> <br/>
+
 <p class="bottom-line"></p>
 <div>
     <h3 class="text-primary left-pad">How to use the Measure Distance Tool?</h3>
@@ -86,13 +89,12 @@
 <!-- Latest compiled and minified JQuery -->
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
-
+<script type="text/javascript" src="plugins/rangeslider/rangeslider.min.js"></script>
 <!-- Latest compiled and minified Bootstrap JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry&key=AIzaSyA7xY6JgrR-hAOLs1ZmZU9vCoFNb_YQ7qI"></script>
 
-<script type="text/javascript" src="plugins/rangeslider/rangeslider.min.js"></script>
 
 <script type="text/javascript" src="script.js"></script>
 

@@ -24,7 +24,11 @@
     height: 150px;
 }
 
-.speed {
+#speed_range {
+    float:left;
+    width: 300px;
+    margin: 15px;
     display: inline !important;
-    width: 500px !important;
 }
+#speed_range .ui-slider-range { background: #729fcf; }
+#speed_range .ui-slider-handle { border-color: #729fcf; }

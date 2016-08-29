@@ -216,29 +216,21 @@ function toggleMarkers() {
 }
 
 function speedRange() {
-
+    $( document ).ready(function() {
+        $( "#speed_range" ).slider({
+            range: "max",
+            min: 0,
+            max: 100,
+            value: 2,
+            slide: function( event, ui ) {
+                $( "#speed_meter" ).val( ui.value );
+            }
+        });
+        $( "#speed_meter" ).val( $( "#speed_range" ).slider( "value" ) );
+    });
 }
 
-$( document ).ready(function() {
-    console.log("123");
-    $('#speed_range').rangeslider({
-        // Callback function
-        onInit: function () {
-            console.log("!23");
-        },
 
-        // Callback function
-        onSlide: function (position, value) {
-            console.log(value);
-        },
-
-        // Callback function
-        onSlideEnd: function (position, value) {
-            console.log(position);
-            $("#speed_meter").val(value);
-        }
-    });
-});
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
