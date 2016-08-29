@@ -23,3 +23,8 @@
 .travel-div {
     height: 150px;
 }
+
+.speed {
+    display: inline !important;
+    width: 500px !important;
+}

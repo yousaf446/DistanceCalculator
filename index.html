@@ -14,6 +14,9 @@
 
     <!-- Custom Css -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Range Slider CSS -->
+    <link rel="stylesheet" href="plugins/rangeslider/rangeslider.css">
 </head>
 <body>
 <div>
@@ -37,13 +40,19 @@
     <p class="text-center">
         <label>Total Distance</label>
         <input type="text" id="tdist" name="tdist" readonly />
-        <input type="radio" id="dist_km" name="dist_unit" /> <label>km</label>
-        <input type="radio" id="dist_miles" name="dist_unit" /> <label>miles</label>
+        <input type="radio" id="dist_km" name="dist_unit" value="km" checked onclick="calculateDistance()"/> <label>km</label>
+        <input type="radio" id="dist_miles" name="dist_unit" value="miles" onclick="calculateDistance()" /> <label>miles</label>
+    </p>
+    <p class="text-center">
+        <input type="button" class="btn btn-primary" id="clear_last" name="clear_last" value="Clear Last" onclick="clearLast()"/>
+        <input type="button" class="btn btn-primary" id="zoom_fit" name="zoom_fit" value="Zoom To Fit" onclick="zoomToFit()"/>
+        <input type="button" class="btn btn-primary" id="clear_map" name="clear_map" value="Clear Map" onclick="clearMap()"/>
+        <input type="button" class="btn btn-primary" id="toggle_markers" name="toggle_markers" value="Toggle Markers" onclick="toggleMarkers()"/>
     </p>
     <p class="text-center">
         <input type="checkbox" id="autopan" name="autopan" /> <label>Autopan ?   </label>
         <input type="checkbox" id="snap_roads" name="snap_roads" /> <label>Snap To Roads ?   </label>
-        <input type="checkbox" id="midpoint_drag" name="midpoint_drag" /> <label>Midpoint Drag ? </label>
+        <!--<input type="checkbox" id="midpoint_drag" name="midpoint_drag" /> <label>Midpoint Drag ? </label>-->
     </p>
 </div>
 <p class="bottom-line"></p>
@@ -51,6 +60,7 @@
     <h3 class="text-primary left-pad">Travel Time</h3>
     <p class="text-center">
         <label>Select Speed</label>
+        <input id="speed_range" type="range" min="0" max="100" step="5" value="0" class="speed"/><input type="text" id="speed_meter" name="speed_meter" readonly style="width:30px" /><label>MPH</label>
     </p>
     <p class="pull-left left-pad">
         <label>Mode of Transport</label><br/>
@@ -80,8 +90,11 @@
 <!-- Latest compiled and minified Bootstrap JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyA7xY6JgrR-hAOLs1ZmZU9vCoFNb_YQ7qI"></script>
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry&key=AIzaSyA7xY6JgrR-hAOLs1ZmZU9vCoFNb_YQ7qI"></script>
 
+<script type="text/javascript" src="plugins/rangeslider/rangeslider.min.js"></script>
 
 <script type="text/javascript" src="script.js"></script>
+
+
 </html>
