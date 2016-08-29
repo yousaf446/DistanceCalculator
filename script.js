@@ -8,7 +8,7 @@ var distancePath = new google.maps.Polyline({
     geodesic: true,
     strokeColor: '#FF0000',
     strokeOpacity: 1.0,
-    strokeWeight: 2
+    strokeWeight: 1
 });
 var toggle = false;
 
@@ -28,24 +28,93 @@ function initialize() {
 
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+    var search = (document.getElementById('search'));
+    var autocomplete = new google.maps.places.Autocomplete(search);
+    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            return;
+        }
+        map.setCenter(place.geometry.location);
+        map.setZoom(14);
+    });
+
+    var fullscreen = document.getElementById('fullscreen');
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(fullscreen);
+
     mapEvents();
 
     speedRange();
 }
 
+function showMyLoc() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+        setTimeout(function() {if(map_center == "") showIpPosition();}, 4000);
+    } else {
+        showIpPosition();
+    }
+
+}
+
+function showIpPosition() {
+    $.get("http://ipinfo.io", function(response) {
+        ip_loc = response.loc;
+        var aCenter = ip_loc.split(",");
+        var map_center = new google.maps.LatLng(aCenter[0], aCenter[1]);
+        map.setCenter(map_center);
+        map.setZoom(14);
+    }, "jsonp");
+}
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+        case error.POSITION_UNAVAILABLE:
+        case error.TIMEOUT:
+        case error.UNKNOWN_ERROR:
+            showIpPosition();
+            break;
+    }
+}
+
+function showPosition(position) {
+    var map_center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    map.setCenter(map_center);
+    map.setZoom(14);
+}
+
 function setMapHeight(height) {
 
     if(height == 'small') {
-        $('.map-div').css("height","300px");
+        $('#map').removeClass("fullscreen");
+        $('#map').addClass("map-canvas");
+        $("#exit").hide();
+        $('.map-div').css("height","350px");
         google.maps.event.trigger(map, 'resize');
     } else if(height == 'medium') {
-        $('.map-div').css("height","400px");
+        $('#map').removeClass("fullscreen");
+        $('#map').addClass("map-canvas");
+        $("#exit").hide();
+        $('.map-div').css("height","450px");
         google.maps.event.trigger(map, 'resize');
     } else if(height == 'large') {
-        $('.map-div').css("height","500px");
+        $('#map').removeClass("fullscreen");
+        $('#map').addClass("map-canvas");
+        $("#exit").hide();
+        $('.map-div').css("height","600px");
         google.maps.event.trigger(map, 'resize');
     } else if(height == 'full') {
+        $("#exit").show();
+        $('#map').addClass("fullscreen");
+        $('#map').removeClass("map-canvas");
+        $('html, body').animate({ scrollTop: 0 }, 0);
+        google.maps.event.trigger(map, 'resize');
+
     }
+}
+
+function exitFullScreen() {
+    setMapHeight('small');
 }
 
 function mapEvents() {
@@ -96,12 +165,14 @@ function createNewMarker(event, type, order) {
             var midDistanceLatLng = findMiddlePoint(markers[mark_counter - 1].getPosition(), markers[mark_counter].getPosition());
             plotMiddlePoint(midDistanceLatLng, mark_counter - 1, mark_counter);
         } else {
-                var midDistanceLatLng = findMiddlePoint(markers[type].getPosition(), markers[mark_counter].getPosition());
-                plotMiddlePoint(midDistanceLatLng, type, mark_counter);
+            var midDistanceLatLng = findMiddlePoint(markers[type].getPosition(), markers[mark_counter].getPosition());
+            plotMiddlePoint(midDistanceLatLng, type, mark_counter);
         }
     }
 
     calculatePath();
+
+    calculateTime();
 
     mark_counter++;
 }
@@ -115,6 +186,8 @@ function createNewMarkerWithMiddle(middlePoint, event) {
 function moveMarkers(mark, event) {
     circles[mark].setPosition(event.latLng);
     markers[mark].setPosition(event.latLng);
+    calculatePath();
+    reDrawMiddlePoints(mark);
 }
 
 function calculatePath() {
@@ -141,17 +214,24 @@ function plotMiddlePoint(middleLatLng, mark1, mark2) {
             strokeColor: '#F896B8'
 
         },
-        draggable: true,
+        //draggable: true,
         map: map,
         id: mark1,
         p1: mark1,
         p2: mark2
     });
+}
 
-    google.maps.event.addListener(middlePoints[mark1], 'dragend', function(event) {
-
-        //createNewMarkerWithMiddle(this, event);
-    });
+function reDrawMiddlePoints(mark) {
+    if(mark == 0) {
+        var midDistanceLatLng = findMiddlePoint(markers[mark].getPosition(), markers[mark+1].getPosition());
+        middlePoints[mark].setPosition(midDistanceLatLng);
+    }else {
+        for(var i = mark - 1; i <= mark ; i++) {
+            var midDistanceLatLng = findMiddlePoint(markers[i].getPosition(), markers[i+1].getPosition());
+            middlePoints[i].setPosition(midDistanceLatLng);
+        }
+    }
 }
 
 function calculateDistance() {
@@ -164,6 +244,7 @@ function calculateDistance() {
     }
     polylineLength = parseFloat(polylineLength).toFixed(2);
     $("#tdist").val(polylineLength);
+    calculateTime();
 }
 
 function clearLast() {
@@ -224,13 +305,47 @@ function speedRange() {
             value: 2,
             slide: function( event, ui ) {
                 $( "#speed_meter" ).val( ui.value );
+                calculateTime();
             }
         });
         $( "#speed_meter" ).val( $( "#speed_range" ).slider( "value" ) );
     });
 }
 
+function changeMode(value) {
+    $( "#speed_range" ).slider("value", value);
+    $( "#speed_meter" ).val( $( "#speed_range" ).slider( "value" ) );
+    calculateTime();
+}
 
+function calculateTime() {
+    var time = convertTime();
+    var unit = $("#time_unit").val();
+    var content = "This would take " + time + " " + unit + " to travel";
+    $("#time_text").html(content);
+}
 
+function convertTime() {
+    var dist = parseFloat($( "#tdist" ).val());
+    var speed = parseFloat($( "#speed_meter" ).val());
+
+    if($("#dist_km").is(":checked")) {
+        dist = dist * 0.62137;
+    }
+
+    var time = (dist / speed);
+    var unit = $("#time_unit").val();
+
+    if(unit == "minutes") {
+        time = time * 60;
+    } else if(unit == "days") {
+        time = time / 24;
+    }
+
+    time = parseFloat(time).toFixed(2);
+
+    return time;
+
+}
 
 google.maps.event.addDomListener(window, 'load', initialize);

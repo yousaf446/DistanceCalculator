@@ -24,9 +24,15 @@
     <p class="left-pad">The measure distance tool is a simple way of find the distance between two points on a map. Start Clicking!</p>
 </div>
 <p class="bottom-line"></p>
-<div class="map-div">
+<div id="map-container" class="map-div">
     <h3 class="text-primary left-pad">Map</h3>
+    <div class="col-md-12 bottom-pad"></div>
+    <div class="col-md-3">Search For Location: <input type="text" id="search" name="search"/></div>
+    <div class="col-md-3"><input type="button" onclick="showMyLoc()" class="btn btn-primary" value="Pan To My Location"/></div>
     <div id="map" class="map-canvas"></div>
+    <div id="fullscreen">
+        <a id="exit" style="display:none" href="javascript:void(0)" onclick="exitFullScreen()"><img src="images/exit.png" style="height:24px;width:24px"/></a>
+    </div>
 </div>
 <div>
     <h3 class="text-primary left-pad">Options</h3>
@@ -59,29 +65,63 @@
 <div class="travel-div">
     <h3 class="text-primary left-pad">Travel Time</h3>
     <p class="text-center">
+        <label id="time_text"></label>
+        <br/>
         <label>Select Speed</label>
         <div id="speed_range"></div><input type="text" id="speed_meter" name="speed_meter" readonly style="width:30px" /><label>MPH</label>
     </p>
     <br/>
     <p class="pull-left left-pad">
         <label>Mode of Transport</label><br/>
-        <input type="radio" id="mode_walk" name="mode_transport" value="walking" /> <label>Walking</label><br/>
-        <input type="radio" id="mode_drive" name="mode_transport" value="driving" /> <label>Driving</label>
+        <input type="radio" id="mode_walk" name="mode_transport" value="walking" onclick="changeMode(2)" checked/> <label>Walking</label><br/>
+        <input type="radio" id="mode_drive" name="mode_transport" value="driving" onclick="changeMode(30)" /> <label>Driving</label>
     </p>
     <p class="pull-right right-pad">
         <label>Time Unit</label>
-        <select id="time_unit" name="time_unit">
-            <option value="min">Minutes</option>
-            <option value="hrs">Hours</option>
+        <select id="time_unit" name="time_unit" onchange="calculateTime()">
+            <option value="minutes">Minutes</option>
+            <option value="hours">Hours</option>
             <option value="days">Days</option>
         </select>
     </p>
 </div>
-<br/> <br/><br/> <br/>
 
+<div class="col-md-12">
+    <div class="col-md-4">
+        <input type="button" id="load_file" value="Load File" class="btn btn-primary" onclick="loadFile()" />
+    </div>
+    <div class="col-md-4">
+        <input type="button" id="export_file" value="Export File" class="btn btn-primary" onclick="exportFile()" />
+    </div>
+    <div class="col-md-4">
+        <input type="button" id="save_db" value="Save To DB" class="btn btn-primary" onclick="saveDB()" />
+    </div>
+</div>
+<br/><br/><br/><br/><br/><br/>
 <p class="bottom-line"></p>
+
 <div>
     <h3 class="text-primary left-pad">How to use the Measure Distance Tool?</h3>
+    <p class="left-pad">
+        Simply click once on one point, then click again on the second point. The distance should then be displayed. You can click more than two points in order to build up a continuous route.
+        <br/><br/>
+        Use the miles / km / nautical miles / yards switch to measure distances in km or in miles or nautical miles. The Autopan option will move the map as you click the points.
+        <br/><br/>
+        The Search For Location text box allows you to quickly get to an area you wish without spending time zooming and panning to find it. For example if you wish to find the city of Rome in Italy, type "Rome, Italy" and then click Search. The map will then go straight to Rome. Note the "[city][comma][space][county]" format.
+        <br/><br/>
+        Toggle markers will show or hide the markers if they get in the way.
+        <br/><br/>
+        Clear last will remove the last point from the map
+        <br/><br/>
+        Zoom to fit will zoom and pan the map to get the best fit of all your points on as large a zoom as possible.
+        <br/><br/>
+        Clear Map is a reset button that will clear all points and allow you to start measuring a distance again.
+        <br/><br/>
+        You can edit the position of any existing points by dragging the marker (when they are displayed) and dropping the marker in it's new position
+        <br/><br/>
+        You can also adjust the height of the map to have it large, medium or small in size.
+        <br/><br/>
+        You can delete a point by right clicking on the node.</p>
 </div>
 <p class="bottom-line"></p>
 </body>
