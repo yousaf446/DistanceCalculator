@@ -56,9 +56,9 @@
         <input type="button" class="btn btn-primary" id="toggle_markers" name="toggle_markers" value="Toggle Markers" onclick="toggleMarkers()"/>
     </p>
     <p class="text-center">
-        <input type="checkbox" id="autopan" name="autopan" /> <label>Autopan ?   </label>
-        <input type="checkbox" id="snap_roads" name="snap_roads" /> <label>Snap To Roads ?   </label>
-        <!--<input type="checkbox" id="midpoint_drag" name="midpoint_drag" /> <label>Midpoint Drag ? </label>-->
+        <input type="checkbox" id="autopan" name="autopan" onclick="autoPanToggle(this)" checked /> <label>Autopan ?   </label>
+        <input type="checkbox" id="snap_roads" name="snap_roads" onclick="snapRoadsToggle(this)" /> <label>Snap To Roads ?   </label>
+        <input type="checkbox" id="midpoint_drag" name="midpoint_drag" onclick="middleDragToggle(this)" checked /> <label>Midpoint Drag ? </label>
     </p>
 </div>
 <p class="bottom-line"></p>

@@ -10,7 +10,13 @@ var distancePath = new google.maps.Polyline({
     strokeOpacity: 1.0,
     strokeWeight: 1
 });
-var toggle = false;
+var toggle = true;
+
+var autoPan = true;
+var snapRoads = false;
+var middleDrag = true;
+
+var service = new google.maps.DirectionsService();
 
 var mark_image = new google.maps.MarkerImage(
     "images/marker.png",
@@ -120,8 +126,11 @@ function exitFullScreen() {
 function mapEvents() {
 
     google.maps.event.addListener(map, 'click', function(event) {
-
-        createNewMarker(event, 'simple');
+        if(snapRoads) {
+            snapRoadsMarker(event);
+        } else {
+            createNewMarker(event, 'simple');
+        }
     });
 }
 
@@ -147,7 +156,8 @@ function createNewMarker(event, type, order) {
         draggable: true,
         map: map,
         id: mark_counter,
-        status: true
+        status: true,
+        visible: toggle
     });
 
     google.maps.event.addListener(circles[mark_counter], 'dragend', function(event) {
@@ -174,13 +184,217 @@ function createNewMarker(event, type, order) {
 
     calculateTime();
 
+    if(autoPan) {
+        map.setCenter(markers[mark_counter].getPosition());
+    }
+
     mark_counter++;
 }
 
-function createNewMarkerWithMiddle(middlePoint, event) {
-    createNewMarker(event, middlePoint.p1, 'first');
-    createNewMarker(event, middlePoint.p2, 'second');
+function createNewMarkerSnap(position, type, order) {
 
+    circles[mark_counter] = new google.maps.Marker({
+        position: position,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 4,
+            strokeColor: '#F896B8'
+
+        },
+        draggable: true,
+        map: map,
+        id: mark_counter,
+        status: true
+    });
+
+    markers[mark_counter] = new google.maps.Marker({
+        position: position,
+        icon: mark_image,
+        draggable: true,
+        map: map,
+        id: mark_counter,
+        status: true,
+        visible: toggle
+    });
+
+    google.maps.event.addListener(circles[mark_counter], 'dragend', function(event) {
+
+        moveMarkers(this.id, event)
+    });
+
+    google.maps.event.addListener(markers[mark_counter], 'dragend', function(event) {
+
+        moveMarkers(this.id, event)
+    });
+
+    calculatePath();
+
+    calculateTime();
+
+    if(autoPan) {
+        map.setCenter(markers[mark_counter].getPosition());
+    }
+
+    mark_counter++;
+}
+
+function findNewMiddlePoints(markID, old_middle) {
+    var mid1 = findMiddlePoint(markers[markID-1].getPosition(), markers[markID].getPosition());
+    var mid2 = findMiddlePoint(markers[markID].getPosition(), markers[markID+1].getPosition());
+
+    var middle1 = new google.maps.Marker({
+        position: mid1,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 4,
+            strokeColor: '#F896B8'
+
+        },
+        draggable: true,
+        map: map,
+        id: old_middle,
+        p1: markers[markID-1].id,
+        p2: markers[markID].id
+    });
+
+    var middle2 = new google.maps.Marker({
+        position: mid2,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 4,
+            strokeColor: '#F896B8'
+
+        },
+        draggable: true,
+        map: map,
+        id: old_middle + 1,
+        p1: markers[markID].id,
+        p2: markers[markID+1].id
+    });
+
+    google.maps.event.addListener(middle1, 'dragend', function(event) {
+
+        createNewMarkerMiddle(this.id, event);
+    });
+
+    google.maps.event.addListener(middle2, 'dragend', function(event) {
+
+        createNewMarkerMiddle(this.id, event);
+    });
+
+    middlePoints.splice(old_middle, 0, middle1, middle2);
+
+    for(var i=old_middle+2; i<middlePoints.length; i++) {
+        var id = middlePoints[i].id;
+        var p1 = middlePoints[i].p1;
+        var p2 = middlePoints[i].p2;
+        middlePoints[i].id = id + 1;
+        middlePoints[i].p1 = p1 + 1;
+        middlePoints[i].p2 = p2 + 1;
+    }
+
+}
+
+function createNewMarkerMiddle(middle, event) {
+    var id = middlePoints[middle].p2;
+    var middleMark = new google.maps.Marker({
+        icon: mark_image,
+        draggable: true,
+        id: id,
+        status: true,
+        visible: toggle
+    });
+
+    var middleMarkCircle = new google.maps.Marker({
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 4,
+            strokeColor: '#F896B8'
+
+        },
+        draggable: true,
+        id: id,
+        status: true
+    });
+
+    google.maps.event.addListener(middleMark, 'dragend', function(event) {
+
+        moveMarkers(this.id, event)
+    });
+
+    google.maps.event.addListener(middleMarkCircle, 'dragend', function(event) {
+
+        moveMarkers(this.id, event)
+    });
+
+    markers.splice(id, 0, middleMark);
+    circles.splice(id, 0, middleMarkCircle);
+
+
+    markers[id].setMap(map);
+    markers[id].setPosition(event.latLng);
+
+    circles[id].setMap(map);
+    circles[id].setPosition(event.latLng);
+
+    mark_counter++;
+
+    for(var i=id+1; i<markers.length; i++) {
+        var markID = markers[i].id;
+        var circlesID = circles[i].id;
+        markers[i].id = markID + 1;
+        circles[i].id = circlesID + 1;
+    }
+
+    middlePoints[middle].setMap(null);
+    middlePoints.splice(middle, 1);
+
+    calculatePath();
+
+    calculateTime();
+
+    findNewMiddlePoints(middleMark.id, middle);
+}
+
+function removeMark(markID) {
+
+    markers[markID].setMap(null);
+    markers.splice(markID, 1);
+
+    circles[markID].setMap(null);
+    circles.splice(markID, 1);
+
+    if (markID == 0) {
+
+        middlePoints[markID].setMap(null);
+        middlePoints.splice(markID, 1);
+
+    } else if (markID == markers.length - 1) {
+
+        middlePoints[middlePoints.length - 1].setMap(null);
+        middlePoints.splice(middlePoints.length - 1, 1);
+    } else {
+
+        middlePoints[markID - 1].setMap(null);
+        middlePoints[markID].setMap(null);
+        middlePoints.splice((markID - 1), 1);
+        middlePoints.splice(markID, 1);
+    }
+
+    calculatePath();
+
+    calculateTime();
+}
+
+function snapRoadsMarker(event) {
+    service.route({ origin: markers[mark_counter - 1].getPosition(), destination:event.latLng, travelMode: google.maps.DirectionsTravelMode.DRIVING }, function(result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
+                console.log(result.routes[0].overview_path[i]);
+                createNewMarkerSnap(result.routes[0].overview_path[i], 'simple');
+            }
+        }
+    });
 }
 
 function moveMarkers(mark, event) {
@@ -214,11 +428,16 @@ function plotMiddlePoint(middleLatLng, mark1, mark2) {
             strokeColor: '#F896B8'
 
         },
-        //draggable: true,
+        draggable: true,
         map: map,
         id: mark1,
         p1: mark1,
         p2: mark2
+    });
+
+    google.maps.event.addListener(middlePoints[mark1], 'dragend', function(event) {
+
+            createNewMarkerMiddle(this.id, event);
     });
 }
 
@@ -289,11 +508,34 @@ function clearMap() {
 }
 
 function toggleMarkers() {
+    toggle = !toggle;
     for(var i in markers) {
         markers[i].setVisible(toggle);
     }
+}
 
-    toggle = !toggle;
+function autoPanToggle(state) {
+    if(state.checked) {
+        autoPan = true;
+    } else {
+        autoPan = false;
+    }
+}
+
+function snapRoadsToggle(state) {
+    if(state.checked) {
+        snapRoads = true;
+    } else {
+        snapRoads = false;
+    }
+}
+
+function middleDragToggle(state) {
+    if(state.checked) {
+        middleDrag = true;
+    } else {
+        middleDrag = false;
+    }
 }
 
 function speedRange() {
