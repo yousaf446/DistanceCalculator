@@ -590,4 +590,127 @@ function convertTime() {
 
 }
 
+function openModal() {
+    $('#loadFileModal').modal('show');
+}
+function loadFile() {
+    var content = JSON.parse($("#file-content").val());
+    clearMap();
+    $( "#speed_meter" ).val(content['speed']);
+
+    for(var i in content['markers']) {
+
+        var pos = new google.maps.LatLng(content['markers'][i].lat, content['markers'][i].lng);
+
+        markers[i] = new google.maps.Marker({
+            position: pos,
+            icon: mark_image,
+            draggable: true,
+            map: map,
+            id: content['markers'][i].id,
+            status: true,
+            visible: toggle
+        });
+
+        google.maps.event.addListener(markers[i], 'dragend', function(event) {
+
+            moveMarkers(this.id, event)
+        });
+
+        mark_counter++;
+    }
+
+    for(var i in content['circles']) {
+
+        var pos = new google.maps.LatLng(content['circles'][i].lat, content['circles'][i].lng);
+
+        circles[i] = new google.maps.Marker({
+            position: pos,
+            icon: mark_image,
+            draggable: true,
+            map: map,
+            id: content['circles'].id,
+            status: true,
+            visible: toggle
+        });
+
+        google.maps.event.addListener(circles[i], 'dragend', function(event) {
+
+            moveMarkers(this.id, event)
+        });
+    }
+
+    for(var i in content['middlePoints']) {
+
+        var pos = new google.maps.LatLng(content['middlePoints'][i].lat, content['middlePoints'][i].lng);
+
+        middlePoints[i] = new google.maps.Marker({
+            position: pos,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 4,
+                strokeColor: '#F896B8'
+            },
+            draggable: true,
+            map: map,
+            id: content['middlePoints'][i].id,
+            p1: content['middlePoints'][i].p1,
+            p2: content['middlePoints'][i].p2
+        });
+
+        google.maps.event.addListener(middlePoints[i], 'dragend', function(event) {
+
+            createNewMarkerMiddle(this.id, event);
+        });
+    }
+
+    calculatePath();
+
+    calculateTime();
+
+    $('#loadFileModal').modal('hide');
+    $('html, body').animate({ scrollTop: 0 }, 0);
+}
+
+function exportFile() {
+    var exportMarkers = [];
+    var exportCircles = [];
+    var exportMiddlePoints = [];
+
+    for(var i in markers) {
+        var mark = {};
+        mark.lat = markers[i].getPosition().lat();
+        mark.lng = markers[i].getPosition().lng();
+        mark.id = markers[i].id;
+        exportMarkers.push(mark);
+    }
+
+    for(var j in circles) {
+        var mark = {};
+        mark.lat = circles[j].getPosition().lat();
+        mark.lng = circles[j].getPosition().lng();
+        mark.id = circles[j].id;
+        exportCircles.push(mark);
+    }
+
+    for(var k in middlePoints) {
+        var mark = {};
+        mark.lat = middlePoints[k].getPosition().lat();
+        mark.lng = middlePoints[k].getPosition().lng();
+        mark.id = middlePoints[k].id;
+        mark.p1 = middlePoints[k].p1;
+        mark.p2 = middlePoints[k].p2;
+        exportMiddlePoints.push(mark);
+        if(k == middlePoints.length - 1) {
+            var content = {};
+            content.markers = exportMarkers;
+            content.circles = exportCircles;
+            content.middlePoints = exportMiddlePoints;
+            content.speed = $( "#speed_meter" ).val();
+            $("#export-content").html(JSON.stringify(content));
+            $('#exportFileModal').modal('show');
+        }
+    }
+}
+
 google.maps.event.addDomListener(window, 'load', initialize);

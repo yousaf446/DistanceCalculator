@@ -29,6 +29,7 @@
     <div class="col-md-12 bottom-pad"></div>
     <div class="col-md-3">Search For Location: <input type="text" id="search" name="search"/></div>
     <div class="col-md-3"><input type="button" onclick="showMyLoc()" class="btn btn-primary" value="Pan To My Location"/></div>
+    <br/><br/><br/>
     <div id="map" class="map-canvas"></div>
     <div id="fullscreen">
         <a id="exit" style="display:none" href="javascript:void(0)" onclick="exitFullScreen()"><img src="images/exit.png" style="height:24px;width:24px"/></a>
@@ -88,7 +89,7 @@
 
 <div class="col-md-12">
     <div class="col-md-4">
-        <input type="button" id="load_file" value="Load File" class="btn btn-primary" onclick="loadFile()" />
+        <input type="button" id="load_file" value="Load File" class="btn btn-primary" onclick="openModal()" />
     </div>
     <div class="col-md-4">
         <input type="button" id="export_file" value="Export File" class="btn btn-primary" onclick="exportFile()" />
@@ -124,6 +125,42 @@
         You can delete a point by right clicking on the node.</p>
 </div>
 <p class="bottom-line"></p>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="loadFileModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Load File</h4>
+            </div>
+            <div class="modal-body">
+                <label Enter Text></label><textarea id="file-content"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="loadFile()">Load</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="exportFileModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Export File</h4>
+            </div>
+            <div class="modal-body">
+                <label Enter Text></label><textarea width="100%" height="100%" id="export-content"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 </body>
 
 <!-- Latest compiled and minified JQuery -->
@@ -133,7 +170,7 @@
 <!-- Latest compiled and minified Bootstrap JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-<script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry&key=AIzaSyA7xY6JgrR-hAOLs1ZmZU9vCoFNb_YQ7qI"></script>
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry&key=AIzaSyDYj_dkUqrszj0Aiulqt-TvUsz246LgiOw"></script>
 
 
 <script type="text/javascript" src="script.js"></script>
